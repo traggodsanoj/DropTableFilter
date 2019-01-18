@@ -60,31 +60,20 @@
 	// change filter for members items
 	function changeMemsFilter(data){
 		console.log('changing members filter to type '+data);
-		var tbltr = 'table.item-drops.filterable tr';
-		switch(data) {
-			case 1:
-				$(tbltr).each(function(){
-					$(this).show();
-				});
-				break;
-			case 2:
-				$(tbltr+'.members-item').each(function(){
-					$(this).hide();
-				});
-				$(tbltr+'.nonmembers-item').each(function(){
-					$(this).show();
-				});
-				break;
-			case 3:
-				$(tbltr+'.members-item').each(function(){
-					$(this).show();
-				});
-				$(tbltr+'.nonmembers-item').each(function(){
-					$(this).hide();
-				});
-				break;
-			default:
-				return -1;
+		var tbltr = 'table.item-drops.filterable tr.members-item';
+		var retdata = -1;
+		if (data == false) {
+			$(tbltr).each(function(){
+				$(this).hide();
+			});
+			retdata = 0;
+		} else if (data == true) {
+			$(tbltr).each(function(){
+				$(this).show();
+			});
+			retdata = 1;
+		} else {
+			return -1;
 		}
 		return data;
 	}
@@ -158,8 +147,7 @@
 		popup,
 		fieldset, applyButton, 
 		fractionButton, overoneButton, percentButton, rateGroup, 
-		membersButton, nonmemsButton, bothmemsButton, membsGroup, 
-		memscolToggle, 
+		membersToggle, memberstGroup, memscolToggle, memscoltGroup,
 		gecolButton, alcolButton, bothcolButton, valGroup;
 
 		console.log('Tables found: '+$tables);
@@ -193,32 +181,19 @@
 		});
 		rateGroup.selectItemByData(userSettings.ratedisp);
 
-		// Members items
-		membersButton = new OO.ui.ButtonOptionWidget({
-			data: 3,
-			label: 'Members items',
-			title: 'Hides all non-member items.',
+		// Members items filter
+		membersToggle = new OO.ui.ToggleSwitchWidget({
+			value: true,
+			title: 'Toggle display of members items on and off.'
 		});
-		nonmemsButton = new OO.ui.ButtonOptionWidget({
-			data: 2,
-			label: 'Non-members items',
-			title: 'Hides all members items.',
-		});
-		bothmemsButton = new OO.ui.ButtonOptionWidget({
-			data: 1,
-			label: 'All Items',
-			title: 'Displays both members and non-members items.',
-		});
-		membsGroup = new OO.ui.ButtonSelectWidget({
-			items: [membersButton, nonmemsButton, bothmemsButton]
-		});
-		membsGroup.selectItemByData(userSettings.memitemfilt);
-
+		memberstGroup = new OO.ui.FieldLayout(membersToggle, {label: 'Display members items: ', align: 'top'});
+		membersToggle.setValue(userSettings.memitemfilt);
 		//Members column toggle
 		memscolToggle = new OO.ui.ToggleSwitchWidget({
 			value: false,
 			title: 'Toggle the members/non-members column on and off.',
 		});
+		memscoltGroup = new OO.ui.FieldLayout(memscolToggle, {label: 'Toggle members column: ', align: 'top'});
 		memscolToggle.setValue(userSettings.memcoldisp);
 
 		//Price/Value columns
@@ -262,13 +237,16 @@
 				upsettings = true;
 			}
 			// For members items filter
-			var mfval = membsGroup.findSelectedItem(), mfdata=1, mfretdata = -1;
+			var mfval = membersToggle.getValue(), mfdata=true, mfretdata = -1;
 			if (mfval !== null) {
-				mfdata = mfval.getData();
+				mfdata =mfval;
 			}
 			mfretdata = changeMemsFilter(mfdata);
-			if (mfretdata !== -1) {
-				userSettings.memitemfilt = mfretdata;
+			if (mfretdata == 0) {
+				userSettings.memitemfilt = false;
+				upsettings = true;
+			} else if (mfretdata == 1){
+				userSettings.memitemfilt = true;
 				upsettings = true;
 			}
 			// For members column display
@@ -303,8 +281,7 @@
 		fieldset = new OO.ui.FieldsetLayout({});
 		fieldset.addItems([
 			new OO.ui.FieldLayout(rateGroup, {label: 'Display drops as: ', align: 'top'}),
-			new OO.ui.FieldLayout(membsGroup, {label: 'Filter items: ', align: 'top'}),
-			new OO.ui.FieldLayout(memscolToggle, {label: 'Toggle members column: ', align: 'top'}),
+			new OO.ui.HorizontalLayout({items: [memberstGroup, memscoltGroup]}),
 			new OO.ui.FieldLayout(valGroup, {label: 'Display price/value as: ', align: 'top'}),
 			new OO.ui.FieldLayout(applyButton),
 		]);
@@ -337,7 +314,7 @@
 				popup.setFloatableContainer(button.$element);
 				// reset buttons (i.e. open popup, click a button but don't apply, close - next time it is opened it should show the current setting not the unapplied one)
 				rateGroup.selectItemByData(userSettings.ratedisp);
-				membsGroup.selectItemByData(userSettings.memitemfilt);
+				membersToggle.setValue(userSettings.memitemfilt);
 				memscolToggle.setValue(userSettings.memcoldisp);
 				valGroup.selectItemByData(userSettings.valcoldisp);
 				// show popup
