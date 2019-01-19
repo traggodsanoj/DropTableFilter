@@ -7,7 +7,7 @@
 
 	var userSettings,
 		settingsName = 'rsw-drop-display-settings2',
-		defaultSettings = {ratedisp: 1, memitemfilt: true, memcoldisp: false, valcoldisp: 1};
+		defaultSettings = {ratedisp: 1, memitemfilt: true, memcoldisp: true, valcoldisp: 1};
 	
 	// grabs settings from localstorage (or defaults if not supported)
 	function getSettings(){
@@ -102,7 +102,7 @@
 			$(tbltr+' td.members-column, '+tbltr+' th.members-column').each(function(){
 				$(this).hide();
 			});
-			$(tbltr+' td.item-col sup[title="Members only"]').each(function(){
+			$(tbltr+' td.item-col sub[title="Members only"]').each(function(){
 				$(this).show();
 			});
 			upsettings = true;
@@ -110,7 +110,7 @@
 			$(tbltr+' td.members-column, '+tbltr+' th.members-column').each(function(){
 				$(this).show();
 			});
-			$(tbltr+' td.item-col sup[title="Members only"]').each(function(){
+			$(tbltr+' td.item-col sub[title="Members only"]').each(function(){
 				$(this).hide();
 			});
 			upsettings = true;
