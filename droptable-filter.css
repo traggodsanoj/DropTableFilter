@@ -1,0 +1,16 @@
+#rsw-drops-overlay2 {
+	font-size: 0.8em;
+}
+
+#rsw-drops-overlay2 .oo-ui-popupWidget-head > .oo-ui-labelElement-label {
+	font-size: 1.25em;
+	font-weight:  bold;
+}
+
+#rsw-drops-overlay2 .oo-ui-horizontalLayout {
+	margin-top: 0.85714286em;
+}
+
+#rsw-drops-overlay2 .oo-ui-horizontalLayout > .oo-ui-layout, #rsw-drops-overlay2 .oo-ui-horizontalLayout > .oo-ui-widget {
+    margin-right: 2em;
+}
