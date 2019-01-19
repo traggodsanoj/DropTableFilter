@@ -14,3 +14,23 @@
 #rsw-drops-overlay2 .oo-ui-horizontalLayout > .oo-ui-layout, #rsw-drops-overlay2 .oo-ui-horizontalLayout > .oo-ui-widget {
     margin-right: 2em;
 }
+
+/* Show/hide members item column and (m) tag after name */
+table.item-drops.filterable.rsw-dropsline-hidemembers tr.members-item,
+table.item-drops.filterable.rsw-dropsline-hidememcol tr .members-column {
+	display: none;
+}
+table.item-drops.filterable tr td.item-col sub[title="Members only"] {
+	display: none;
+}
+table.item-drops.filterable.rsw-dropsline-hidememcol tr td.item-col sub[title="Members only"] {
+	display: initial;
+}
+
+/* Show/hide GE and Alch column */
+table.item-drops.filterable.rsw-dropsline-hidege tr .ge-column {
+	display:  none;
+}
+table.item-drops.filterable.rsw-dropsline-hidealch tr .alch-column {
+	display:  none;
+}
