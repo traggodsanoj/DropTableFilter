@@ -7,7 +7,7 @@
 
 	var userSettings,
 		settingsName = 'rsw-drop-display-settings2',
-		defaultSettings = {ratedisp: 1, memitemfilt: 1, memcoldisp: false, valcoldisp: 1};
+		defaultSettings = {ratedisp: 1, memitemfilt: true, memcoldisp: false, valcoldisp: 1};
 	
 	// grabs settings from localstorage (or defaults if not supported)
 	function getSettings(){
