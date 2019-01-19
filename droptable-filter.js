@@ -33,56 +33,70 @@
 	}
 	
 	// change rate to a different display
-	function changeRateDisp(data){
-		console.log('changing rate displayed data to type '+data);
-		var  attr = '', append = '';
-		switch(data) {
+	function changeRateDisp(data,init){
+		var  rdisp = 0, attr = '', append = '', upsettings = false;
+		if (init == true) {
+			rdisp = data;
+		} else {
+			rdisp = data.getData();
+		}
+		console.log('changing rate displayed data to type '+rdisp);
+		switch(rdisp) {
 			case 1:
 				attr = 'data-drop-fraction';
+				upsettings = true;
 				break;
 			case 2:
 				attr = 'data-drop-oneover';
+				upsettings = true;
 				break;
 			case 3:
 				attr = 'data-drop-percent';
+				upsettings = true;
 				append = '%';
 				break;
+			default:
+				console.log('Invalid rate display type '+rdisp);
 		}
-		if (attr === '') return -1;
-		
 		$('table.item-drops td span[data-drop-fraction]').each(function(){
 			var $cell = $(this), newText = $cell.attr(attr);
 			$cell.text(newText + append);
 		});
-		return data;
+		if (upsettings == true) {
+			userSettings.ratedisp = rdisp;
+			updateSettings();
+		}
 	}
 
 	// change filter for members items
 	function changeMemsFilter(data){
 		console.log('changing members filter to type '+data);
 		var tbltr = 'table.item-drops.filterable tr.members-item';
-		var retdata = -1;
+		var upsettings = false;
 		if (data == false) {
 			$(tbltr).each(function(){
 				$(this).hide();
 			});
-			retdata = 0;
+			upsettings = true;
 		} else if (data == true) {
 			$(tbltr).each(function(){
 				$(this).show();
 			});
-			retdata = 1;
+			upsettings = true;
 		} else {
-			return -1;
+			console.log('Invalid members filter type '+data);
 		}
-		return data;
+		if (upsettings == true) {
+			userSettings.memitemfilt = data;
+			updateSettings();
+		}
 	}
 
 	// toggle display of members item column
 	function changeMemsDisp(data){
 		console.log('changing members item column to '+data);
 		var tbltr = 'table.item-drops.filterable tr';
-		var retdata = -1;
+		var upsettings = false;
 		//function - show/hide column, hide/show icon
 		if (data == false) {
 			$(tbltr+' td.members-column, '+tbltr+' th.members-column').each(function(){
@@ -91,7 +105,7 @@
 			$(tbltr+' td.item-col sup[title="Members only"]').each(function(){
 				$(this).show();
 			});
-			retdata = 0;
+			upsettings = true;
 		} else if (data == true) {
 			$(tbltr+' td.members-column, '+tbltr+' th.members-column').each(function(){
 				$(this).show();
@@ -99,17 +113,28 @@
 			$(tbltr+' td.item-col sup[title="Members only"]').each(function(){
 				$(this).hide();
 			});
-			retdata = 1;
+			upsettings = true;
+		} else {
+			console.log('Invalid members item column setting '+data);
 		}
-		return retdata;
+		if (upsettings == true) {
+			userSettings.memcoldisp = data;
+			updateSettings();
+		}
 	}
 
 	// change value display column
-	function changeValDisp(data){
-		console.log('changing value column display to type '+data);
+	function changeValDisp(data,init){
 		var tblge = 'table.item-drops.filterable tr td.ge-column, table.item-drops.filterable tr th.ge-column';
 		var tblalc = 'table.item-drops.filterable tr td.alch-column, table.item-drops.filterable tr th.alch-column';
-		switch (data) {
+		var vdisp = 0, upsettings = false;
+		if (init == true) {
+			vdisp = data;
+		} else {
+			vdisp = data.getData();
+		}
+		console.log('changing value column display to type '+vdisp);
+		switch (vdisp) {
 			case 1:
 				$(tblge).each(function(){
 					$(this).show();
@@ -117,6 +142,7 @@
 				$(tblalc).each(function(){
 					$(this).hide();
 				});
+				upsettings = true;
 				break;
 			case 2:
 				$(tblge).each(function(){
@@ -125,6 +151,7 @@
 				$(tblalc).each(function(){
 					$(this).show();
 				});
+				upsettings = true;
 				break;
 			case 3:
 				$(tblge).each(function(){
@@ -133,11 +160,15 @@
 				$(tblalc).each(function(){
 					$(this).show();
 				});
+				upsettings = true;
 				break;
 			default:
-				return -1;
+				console.log('Invalid value column display type '+vdisp);
 		}
-		return data;
+		if (upsettings == true) {
+			userSettings.valcoldisp = vdisp;
+			updateSettings();
+		}
 	}
 	
 	// initialise
@@ -154,10 +185,10 @@
 		
 		// get settings and update display
 		getSettings();
-		changeRateDisp(userSettings.ratedisp);
+		changeRateDisp(userSettings.ratedisp,true);
 		changeMemsFilter(userSettings.memitemfilt);
 		changeMemsDisp(userSettings.memcoldisp);
-		changeValDisp(userSettings.valcoldisp);
+		changeValDisp(userSettings.valcoldisp,true);
 		
 		// build popup
 		// Droprate column
@@ -180,6 +211,7 @@
 			items: [fractionButton, overoneButton, percentButton]
 		});
 		rateGroup.selectItemByData(userSettings.ratedisp);
+		rateGroup.on('choose',changeRateDisp);
 
 		// Members items filter
 		membersToggle = new OO.ui.ToggleSwitchWidget({
@@ -188,13 +220,15 @@
 		});
 		memberstGroup = new OO.ui.FieldLayout(membersToggle, {label: 'Display members items: ', align: 'top'});
 		membersToggle.setValue(userSettings.memitemfilt);
+		membersToggle.on('change',changeMemsFilter);
 		//Members column toggle
 		memscolToggle = new OO.ui.ToggleSwitchWidget({
 			value: false,
 			title: 'Toggle the members/non-members column on and off.',
 		});
-		memscoltGroup = new OO.ui.FieldLayout(memscolToggle, {label: 'Toggle members column: ', align: 'top'});
 		memscolToggle.setValue(userSettings.memcoldisp);
+		memscolToggle.on('change',changeMemsDisp);
+		memscoltGroup = new OO.ui.FieldLayout(memscolToggle, {label: 'Toggle members column: ', align: 'top'});
 
 		//Price/Value columns
 		gecolButton = new OO.ui.ButtonOptionWidget({
@@ -216,74 +250,13 @@
 			items: [gecolButton, alcolButton, bothcolButton]
 		});
 		valGroup.selectItemByData(userSettings.valcoldisp);
-
-		// Apply button
-		applyButton = new OO.ui.ButtonInputWidget({
-			label: 'Apply',
-			flags: ['primary', 'progressive']
-		});
-		
-		applyButton.on('click', function(){
-			var upsettings = false;
-			// For rate display
-			var rval = rateGroup.findSelectedItem(), rdata=1, rretdata = -1;
-			if (rval !== null) {
-				rdata = rval.getData();
-			}
-			rretdata = changeRateDisp(rdata);
-			if (rretdata !== -1) {
-				// update settings only if correct type (should be always but hey)
-				userSettings.ratedisp = rretdata;
-				upsettings = true;
-			}
-			// For members items filter
-			var mfval = membersToggle.getValue(), mfdata=true, mfretdata = -1;
-			if (mfval !== null) {
-				mfdata =mfval;
-			}
-			mfretdata = changeMemsFilter(mfdata);
-			if (mfretdata == 0) {
-				userSettings.memitemfilt = false;
-				upsettings = true;
-			} else if (mfretdata == 1){
-				userSettings.memitemfilt = true;
-				upsettings = true;
-			}
-			// For members column display
-			var mcval = memscolToggle.getValue(), mcdata=false, mcretdata = -1;
-			if (mcval !== null) {
-				mcdata = mcval;
-			}
-			mcretdata = changeMemsDisp(mcdata);
-			if (mcretdata == 0) {
-				userSettings.memcoldisp = false;
-				upsettings = true;
-			} else if (mcretdata == 1) {
-				userSettings.memcoldisp = true;
-				upsettings = true;
-			}
-			// For value column display
-			var vcval = valGroup.findSelectedItem(), vcdata=1, vcretdata = -1;
-			if (vcval !== null) {
-				vcdata = vcval.getData();
-			}
-			vcretdata = changeValDisp(vcdata);
-			if (vcretdata !== -1) {
-				userSettings.valcoldisp = vcretdata;
-				upsettings = true;
-			}
-			// If settings changed update settings
-			if (upsettings == true) {
-				updateSettings();
-			}
-		});
+		valGroup.on('choose',changeValDisp);
 		
 		fieldset = new OO.ui.FieldsetLayout({});
 		fieldset.addItems([
 			new OO.ui.FieldLayout(rateGroup, {label: 'Display drops as: ', align: 'top'}),
 			new OO.ui.HorizontalLayout({items: [memberstGroup, memscoltGroup]}),
 			new OO.ui.FieldLayout(valGroup, {label: 'Display price/value as: ', align: 'top'}),
-			new OO.ui.FieldLayout(applyButton),
 		]);
 		
 		popup = new OO.ui.PopupWidget({
