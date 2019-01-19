@@ -71,16 +71,16 @@
 	// change filter for members items
 	function changeMemsFilter(data){
 		console.log('changing members filter to type '+data);
-		var tbltr = 'table.item-drops.filterable tr.members-item';
+		var tbl = 'table.item-drops.filterable';
 		var upsettings = false;
 		if (data == false) {
-			$(tbltr).each(function(){
-				$(this).hide();
+			$(tbl).each(function(){
+				$(this).addClass('rsw-dropsline-hidemembers');
 			});
 			upsettings = true;
 		} else if (data == true) {
-			$(tbltr).each(function(){
-				$(this).show();
+			$(tbl).each(function(){
+				$(this).removeClass('rsw-dropsline-hidemembers');
 			});
 			upsettings = true;
 		} else {
@@ -95,23 +95,17 @@
 	// toggle display of members item column
 	function changeMemsDisp(data){
 		console.log('changing members item column to '+data);
-		var tbltr = 'table.item-drops.filterable tr';
+		var tbl = 'table.item-drops.filterable';
 		var upsettings = false;
 		//function - show/hide column, hide/show icon
 		if (data == false) {
-			$(tbltr+' td.members-column, '+tbltr+' th.members-column').each(function(){
-				$(this).hide();
-			});
-			$(tbltr+' td.item-col sub[title="Members only"]').each(function(){
-				$(this).show();
+			$(tbl).each(function(){
+				$(this).addClass('rsw-dropsline-hidememcol');
 			});
 			upsettings = true;
 		} else if (data == true) {
-			$(tbltr+' td.members-column, '+tbltr+' th.members-column').each(function(){
-				$(this).show();
-			});
-			$(tbltr+' td.item-col sub[title="Members only"]').each(function(){
-				$(this).hide();
+			$(tbl).each(function(){
+				$(this).removeClass('rsw-dropsline-hidememcol');
 			});
 			upsettings = true;
 		} else {
@@ -125,8 +119,7 @@
 
 	// change value display column
 	function changeValDisp(data,init){
-		var tblge = 'table.item-drops.filterable tr td.ge-column, table.item-drops.filterable tr th.ge-column';
-		var tblalc = 'table.item-drops.filterable tr td.alch-column, table.item-drops.filterable tr th.alch-column';
+		var tbl = 'table.item-drops.filterable';
 		var vdisp = 0, upsettings = false;
 		if (init == true) {
 			vdisp = data;
@@ -136,29 +129,23 @@
 		console.log('changing value column display to type '+vdisp);
 		switch (vdisp) {
 			case 1:
-				$(tblge).each(function(){
-					$(this).show();
-				});
-				$(tblalc).each(function(){
-					$(this).hide();
+				$(tbl).each(function(){
+					$(this).removeClass('rsw-dropsline-hidege');
+					$(this).addClass('rsw-dropsline-hidealch');
 				});
 				upsettings = true;
 				break;
 			case 2:
-				$(tblge).each(function(){
-					$(this).hide();
-				});
-				$(tblalc).each(function(){
-					$(this).show();
+				$(tbl).each(function(){
+					$(this).addClass('rsw-dropsline-hidege');
+					$(this).removeClass('rsw-dropsline-hidealch');
 				});
 				upsettings = true;
 				break;
 			case 3:
-				$(tblge).each(function(){
-					$(this).show();
-				});
-				$(tblalc).each(function(){
-					$(this).show();
+				$(tbl).each(function(){
+					$(this).removeClass('rsw-dropsline-hidege');
+					$(this).removeClass('rsw-dropsline-hidealch');
 				});
 				upsettings = true;
 				break;
